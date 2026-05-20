@@ -1,0 +1,223 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                 template="./Templates/adminTemplate.xhtml"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:h="http://java.sun.com/jsf/html"
+                 xmlns:f="http://java.sun.com/jsf/core"
+                 xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+
+
+    <ui:define name="content">
+ <!-- Dialogo Impresión codigo alumno -->
+        <p:dialog id="dCodigo"
+                  widgetVar="dlgCodigo"
+                  closable="true" position="top" header="Alumnos">
+
+            <h:inputHidden value="#{alumnoBean.alumno.id}" />
+            <p:scrollPanel mode="native" style="max-height:600px">    
+
+                <p:panel id="pCodigo" styleClass="contenidoTabla">
+                    <img src="Imagenes/logo.jpg "/>
+
+                    <h:panelGrid cellpadding="0" cellspacing="0" columns="2"                                  
+                                 columnClasses="contenidoTabla,contenidoTabla">
+                        <h:outputText value="Alumno: " styleClass="headerTabla" />
+                        <h:outputText value="#{alumnoBean.alumno}" />
+                        <h:outputText value="DNI: " styleClass="headerTabla" />
+                        <h:outputText value="#{alumnoBean.alumno.dni}" />    
+                        <h:outputText value="Fecha Nacimiento: " styleClass="headerTabla" />
+                        <h:outputText value="#{alumnoBean.alumno.fechaNacimiento}" >
+                                          <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                        <h:outputText  value="Localidad:  " styleClass="headerTabla" />
+                        <h:outputText  value="#{alumnoBean.alumno.domicilio.localidad}"/> 
+                        <h:outputText  value="Barrio:  " styleClass="headerTabla" />
+                        <h:outputText  value="#{alumnoBean.alumno.domicilio.barrio}"/>
+                        <h:outputText  value="Calle:  " styleClass="headerTabla" />
+                        <h:outputText  value="#{alumnoBean.alumno.domicilio.calle}"/>
+                        <h:outputText  value="Numero:  " styleClass="headerTabla" />
+                        <h:outputText  value="#{alumnoBean.alumno.domicilio.numero}"/>
+
+                        <h:outputText value="Codigo RAPIPAGO" styleClass="headerTabla" />
+                        <p:barcode value="#{alumnoBean.getCodigoRapipago(alumnoBean.alumno)}" type="int2of5"/>
+
+                    </h:panelGrid>
+                </p:panel>
+                <p:commandButton value="Imprimir" type="button" icon="ui-icon-print" style="display:block;margin-bottom: 20px">
+                    <p:printer target="pCodigo" />
+                </p:commandButton><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p></p:scrollPanel>
+        </p:dialog>
+        <!-- Inicio Formulario Alta Principal-->
+        <h1>
+
+            <h:outputText value="Alumnos Por Cohorte"
+                          class="Bienvenido"/>  
+        </h1>
+
+        <table>
+            <tr>
+
+
+                <td>
+
+                    <h:outputText value="Cohorte"/><br/>
+                    <p:selectOneMenu id="somCohorte" 
+                                     value="#{cohorteLstBean.cohorteSelect}"
+                                     converter="ConversorCohorte"
+                                     >
+                        <f:selectItems value="#{cohorteLstBean.lstSICohorte}"/>
+                    </p:selectOneMenu>
+
+                </td>
+                <td>
+                    <br/>
+                    <p:commandButton id="cbConsultarAlumnosCohorte"
+                                     value="Buscar" 
+                                     icon="ui-icon-search" 
+                                     update=":frmPri:dtAlumnosCohorte"
+                                     actionListener="#{consultaCobrosAlumnosBean.buscarAlumnosCohorte()}"
+                                     /> 
+
+                </td>
+            </tr>
+        </table>
+
+        <h:commandLink >
+            <p:graphicImage value="./Imagenes/pdf.png" title="Exportar Ultima Cuota"/>
+            <pe:exporter type="pdf" target="dtAlumnosCohorte" orientation="Landscape"
+                         fileName="ultima_cuota" datasetPadding="4"  cellFontSize="10" 
+                         skipComponents="org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox,org.primefaces.component.spacer.Spacer,org.primefaces.component.outputpanel.OutputPanel"
+                         preProcessor="#{consultaCobrosGeneralesBean.generar()}"
+                         />  
+        </h:commandLink>
+        <p:dataTable id="dtAlumnosCohorte"
+                     value="#{consultaCobrosAlumnosBean.lstInscripcionAlumnos}" 
+                     var="item"
+                     filterEvent="enter" 
+                     paginator="true"
+                     rows="20"
+                     widgetVar="tablaAlumnos"
+                     binding="#{consultaCobrosAlumnosBean.tablaAlumnos}"
+                     rowsPerPageTemplate="20,50,100,500">
+            <f:facet name="header">  
+                <h:outputText value="Alumnos "/>                
+                <h:outputText value=" Cohorte: "/>  
+                <h:outputText value="#{cohorteLstBean.cohorteSelect}"/>  
+
+            </f:facet> 
+            
+            <p:column width="30" exportable="false">
+               
+                <p:commandButton id="cbCodigo"
+                                 title="Código"
+                                 icon="ui-icon-print" 
+                                 update=":frmPri:dCodigo, @this"
+                                 oncomplete="PF('dlgCodigo').show();"
+                                 >
+                    <f:setPropertyActionListener value="#{item.alumno}" target="#{alumnoBean.alumno}"/> 
+
+                </p:commandButton>
+            </p:column>
+
+            
+            
+            <p:column width="50"
+                      >
+                <f:facet name="header">
+                    <h:outputText value="Orden"/>
+                </f:facet>
+                <h:outputText value="#{consultaCobrosAlumnosBean.tablaAlumnos.rowIndex + 1}"/>
+            </p:column>
+            <p:column width="150"
+                      style="word-wrap:break-word;"
+                      filterBy="#{item.alumno.dni}">
+                <f:facet name="header">
+                    <h:outputText value="Dni"/>
+                </f:facet>
+                <h:outputText value="#{item.alumno.dni}"/>
+            </p:column>
+
+            <p:column width="150"
+                      style="word-wrap:break-word;"
+                      filterBy="#{item.alumno.apellido}"
+                      sortBy="#{item.alumno.apellido}" >
+                <f:facet name="header">
+                    <h:outputText value="Alumno"/>
+                </f:facet>
+                <h:outputText value="#{item.alumno.apellido}, #{item.alumno.nombre}"/>
+            </p:column>
+
+            <p:column width="150"
+                      style="word-wrap:break-word;"
+                      filterBy="#{item.matricula}">
+                <f:facet name="header">
+                    <h:outputText value="Matricula"/>
+                </f:facet>
+                <h:outputText value="#{item.matricula}"/>
+            </p:column>
+
+
+            <p:column width="150"
+                      style="word-wrap:break-word;"
+                      filterBy="#{item.cohorte.carrera}">
+                <f:facet name="header">
+                    <h:outputText value="Carrera"/>
+                </f:facet>              
+                <h:outputText value="#{item.cohorte.carrera}"/>
+            </p:column>
+            <p:column width="150"
+                      style="word-wrap:break-word;"
+                      filterBy="#{item.cohorte}">
+                <f:facet name="header">
+                    <h:outputText value="Cohorte"/>
+                </f:facet>
+                <h:outputText value="#{item.cohorte}"/>
+            </p:column>
+
+
+            <p:column width="80"
+                      style="word-wrap:break-word;"
+                      filterBy="#{item.fechaInscripcion}">
+                <f:facet name="header">
+                    <h:outputText value="Fecha Inscripción"/>
+                </f:facet>
+                <h:outputText value="#{item.fechaInscripcion}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </h:outputText>    
+            </p:column>
+            <f:facet name="footer" id="pnTotalCohorte">               
+                <h:outputLabel value="Emision de Reporte: " />
+                <h:outputText  value="#{consultaCobrosAlumnosBean.now}">
+                    <f:convertDateTime pattern="dd/MM/yyyy" locale="es_ES"/>
+                </h:outputText>
+
+            </f:facet>
+        </p:dataTable>
+
+        <h3>Exportar</h3>
+
+
+        <h:commandLink>
+            <p:graphicImage value="./Imagenes/excel.png" title="Exportar Alumnos"/>
+            <p:dataExporter type="xls" postProcessor="#{consultaCobrosGeneralesBean.postProcessXLS}" 
+                            target="dtAlumnosCohorte" fileName="alumnos"   pageOnly="false"/>
+        </h:commandLink>
+
+
+        <h:commandLink >
+            <p:graphicImage value="./Imagenes/pdf.png" title="Exportar Ultima Cuota"/>
+            <pe:exporter type="pdf" target="dtAlumnosCohorte" orientation="Landscape"
+                         fileName="ultima_cuota" datasetPadding="4"  cellFontSize="10" 
+                         skipComponents="org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox,org.primefaces.component.spacer.Spacer,org.primefaces.component.outputpanel.OutputPanel"
+                         preProcessor="#{consultaCobrosGeneralesBean.generar()}"
+                         />  
+        </h:commandLink>
+
+        <p:messages autoUpdate="true"/>
+
+    </ui:define>
+</ui:composition>

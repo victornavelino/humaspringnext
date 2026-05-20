@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                 template="./Templates/adminTemplate.xhtml"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:h="http://java.sun.com/jsf/html"
+                 xmlns:f="http://java.sun.com/jsf/core">
+
+
+
+    <ui:define name="content">
+
+        <h1>
+            <h:outputText value="Cohortes"/>
+        </h1>
+
+        <p:dialog id="dCohorte"
+                  widgetVar="dlgCohorte"
+                  closable="false" position="top" header="Cohortes" >    
+            <h:inputHidden value="#{cohorteBean.cohorte.id}" />
+            <h:inputHidden value="#{cohorteBean.iActionBtnSelect}"/>
+            <h:panelGrid id="prCohorte" columns="2">
+                <h:outputText value="Carrera"/>
+                <p:selectOneMenu id="service" value="#{cohorteBean.cohorte.carrera}" converter="ConversorGenerico" filter="true" filterMatchMode="contains" >  
+                    <f:selectItem itemLabel="Seleccionar" noSelectionOption="true"/>
+                    <f:selectItems value="#{carreraLstBean.lstCarrera}" />
+                </p:selectOneMenu>     
+                <h:outputText value="Descripcion"/>
+                <p:inputText id="itDescripcionCohorte" 
+                             value="#{cohorteBean.cohorte.descripcion}"/>
+
+
+                <h:outputText value="Cantidad Cuotas"/>
+                <p:inputText id="itCantidadCuotas" 
+                             value="#{cohorteBean.cohorte.cantidadCuotas}"/> 
+
+                <h:outputText value="Importe Cuota $"/>
+                <p:inputText id="itImporteCuota" 
+                             value="#{cohorteBean.cohorte.importeCuota}"/>
+
+                <h:outputText value="Año"/>
+                <p:selectOneMenu id="soAnio" 
+                                 value="#{cohorteBean.cohorte.anio}"
+                                 converter="ConversorAnios"
+                                 required="false">
+                    <f:selectItems value="#{anioLstBean.lstAnios}"/>
+                </p:selectOneMenu>
+
+            </h:panelGrid>
+
+            <br></br>
+
+            <h:panelGroup style="display:block; text-align:center">
+                <div style=" float: left;">
+                    <p:messages autoUpdate="true"/>
+                </div>
+                <br></br>
+
+
+                <p:commandButton id="btnAltaCohorte"
+                                 value=" " 
+                                 actionListener="#{cohorteBean.actionBtn}" 
+                                 update=":frmPri:dtCohorte, :frmPri:dCohorte"  
+                                 binding="#{cohorteBean.cbAction}"
+                                 styleClass="boton"/>
+
+
+                <p:commandButton id="btnSalir"
+                                 value="Salir"  
+                                 actionListener="#{cohorteBean.limpiar()}"
+                                 oncomplete="PF('dlgCohorte').hide()"
+                                 icon="ui-icon-cancel"
+                                 update=":frmPri:dtCohorte, :frmPri:dCohorte"  
+                                 styleClass="boton"/>
+            </h:panelGroup></p:dialog>
+        <!--Pantalla Principal-->
+
+        <p:commandButton id="cbCreate"
+                         value="Agregar" 
+                         icon="ui-icon-circle-plus" 
+                         oncomplete="PF('dlgCohorte').show();"
+                         actionListener="#{cohorteBean.setBtnSelect}"
+                         update=":frmPri:dtCohorte,:frmPri:dCohorte"
+                         />
+
+
+        <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
+            <p:printer target="dtCohorte" />
+        </p:commandButton>
+        <p:messages autoUpdate="true"/>
+
+        <p:dataTable id="dtCohorte"
+                     widgetVar="dtCohorte"
+                     value="#{cohorteLstBean.lstCohorte}" 
+                     var="item"
+                     style="overflow-x: auto;"
+                     paginator="true"
+                     rows="20"
+                     filterEvent="enter"
+                     rowsPerPageTemplate="20,50,100,500">      
+
+            <p:column width="110">
+                <p:commandButton id="cbEdit"
+                                 title="Editar"
+                                 actionListener="#{cohorteBean.setBtnSelect}"
+                                 update=":frmPri:dCohorte"
+                                 icon="ui-icon-pencil"
+                                 oncomplete="PF('dlgCohorte').show();"
+                                 >
+                    <f:setPropertyActionListener value="#{item}" target="#{cohorteBean.cohorte}" />  
+                </p:commandButton>
+                <p:commandButton id="cbDelete"
+                                 title="Eliminar"
+                                 icon="ui-icon-circle-close" 
+                                 actionListener="#{cohorteBean.setBtnSelect}"
+                                 oncomplete="PF('dlgCohorte').show();"
+                                 update=":frmPri:dCohorte"   >
+                    <f:setPropertyActionListener value="#{item}" target="#{cohorteBean.cohorte}"/> 
+                </p:commandButton>
+            </p:column>
+            <p:column  width="100"
+                       style="word-wrap:break-word;">
+                <f:facet name="header">
+                    <h:outputText value="Id"/>
+                </f:facet>
+                <h:outputText value="#{item.id}"/>
+            </p:column>
+
+            <p:column filterBy="#{item.carrera}" >
+                <f:facet name="header">
+                    <h:outputText value="Carrera"/>
+                </f:facet>
+                <h:outputText value="#{item.carrera}"/>
+            </p:column>
+            <p:column filterBy="#{item.descripcion}" >
+                <f:facet name="header">
+                    <h:outputText value="Cohorte"/>
+                </f:facet>
+                <h:outputText value="#{item.descripcion}"/>
+            </p:column>
+            <p:column >
+
+                <f:facet name="header">
+                    <h:outputText value="Cuotas"/>
+                </f:facet>
+                <h:outputText value="#{item.cantidadCuotas}"/>
+            </p:column>
+
+            <p:column >
+
+                <f:facet name="header">
+                    <h:outputText value="Importe"/>
+                </f:facet>
+                <h:outputText value="#{item.importeCuota}"/>
+            </p:column>
+            <p:column >
+
+                <f:facet name="header">
+                    <h:outputText value="Año"/>
+                </f:facet>
+                <h:outputText value="#{item.anio}"/>
+            </p:column>
+
+
+        </p:dataTable>
+    </ui:define>
+</ui:composition>

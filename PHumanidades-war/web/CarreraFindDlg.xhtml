@@ -1,0 +1,51 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <!--Inicio Dialogo buscar Carrera-->
+    <p:dialog id="dCarrerasSeleccion"
+              header="Carreras"
+              widgetVar="dlgCarrerasSeleccion"
+              modal="true"
+              width="700"
+              position="top">
+
+
+
+        <div style="clear: both;"/>
+
+
+        <div class="camposTexto" style="width: 100%;">
+            <p:dataTable id="dtCarrerasSeleccion" 
+                         var="car" 
+                         value="#{carreraLstBean.lstCarrera}"
+                         paginator="true" 
+                         rows="10"  
+                         selection="#{carreraLstBean.arrayCarrerasSelect}"
+                         rowKey="#{car.id}"
+                         selectionMode="multiple"
+                         filterEvent="enter">
+
+
+                <p:column headerText="Nombre" 
+                          filterBy="#{car.descripcion}">
+                    #{car.descripcion}
+                </p:column>
+
+                <f:facet name="footer">  
+                    <p:commandButton id="multiViewButton" 
+                                     value="Agregar" 
+                                     icon="ui-icon-search"
+                                     action="#{carreraLstBean.cargarDatosListCarrera()}"
+                                     oncomplete="PF('dlgCarrerasSeleccion').hide();"/>  
+                </f:facet> 
+            </p:dataTable>
+        </div>
+
+    </p:dialog>
+
+
+</ui:composition>

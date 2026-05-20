@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ModificarEstadoDialog" widgetVar="modificarEstadoDialog" modal="true"  resizable="false" 
+                  appendTo="@(body)" header="Datos del Comprobante"
+                  position="top"
+                  width="50%" height="70%" style="background-color: #f8f8f8">
+            <h:form id="ModificarEstadoDialogForm">
+
+                <div class="card" > 
+
+                    <p:panelGrid columns="2" rendered="#{informePagoAlumnoBean.selected != null}"
+                                 layout="grid"
+                                 columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
+                                 class="ui-panelgrid-blank ui-fluid"
+                                 style="border:0px none; background-color:transparent; height: 90%">
+                        <p:outputLabel value="Cohorte: " for="cohorte" />
+                        <p:outputLabel id="cohorte" value="#{informePagoAlumnoBean.selected.cohorte}"/>
+                        <p:outputLabel value="Nro de Cuota: " for="nroCuota" />
+                        <p:outputLabel id="nroCuota" value="#{informePagoAlumnoBean.selected.nroCuota}" 
+                                       title="Nro de Cuota" 
+                                       />
+                        <p:outputLabel value="#{bundleInformePagoAlumno.EditInformePagoAlumnoLabel_descripcion}" for="descripcion" />
+                        <p:outputLabel id="descripcion" value="#{informePagoAlumnoBean.selected.descripcion}" 
+                                       title="Descripcion" />
+                        <p:outputLabel value="#{bundleInformePagoAlumno.EditInformePagoAlumnoLabel_fecha}" for="fecha" />
+                        <p:outputLabel id="fecha" value="#{informePagoAlumnoBean.selected.fecha}" 
+                                       title="fecha" >
+                            <f:convertDateTime pattern="dd:MM:yyyy" />
+                        </p:outputLabel>
+
+                        <p:outputLabel value="#{bundleInformePagoAlumno.EditInformePagoAlumnoLabel_comprobantePago}" for="comprobantePago" />
+                        <p:outputLabel id="comprobantePago" value="#{informePagoAlumnoBean.selected.nombreComprobantePago}" title="#{bundleInformePagoAlumno.EditInformePagoAlumnoTitle_comprobantePago}" />
+
+                        <p:outputLabel value="Concepto" for="tipoIngreso"/>
+                        <p:selectOneMenu id="tipoIngreso" style="width: 400px !important"
+                                         value="#{informePagoAlumnoBean.selected.tipoIngreso}">
+                            <f:converter binding="#{conversorTipoIngreso}"/>
+                            <f:selectItem itemLabel="Seleccionar" itemValue="null" noSelectionOption="true"/>
+                            <f:selectItems value="#{tipoIngresoController.itemsAvailableSelectOne}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Mensaje del Alumno:" for="mensajeAlumno"/>
+                        <p:inputTextarea id="mensajeAlumno"  rows="3" cols="80" value="#{informePagoAlumnoBean.selected.mensajeAlumno}" disabled="true"/>
+
+                        <p:outputLabel value="Responder: " for="respuestaSistema"/>
+                        <p:inputTextarea id="respuestaSistema" rows="3" cols="80" value="#{informePagoAlumnoBean.selected.respuestaSistema}"/>
+
+                        <p:outputLabel value="Seleccionar: "/>
+                        <p:selectOneMenu id="selectEstadoComprobante" value="#{informePagoAlumnoBean.selected.estadoComprobanteAlumno}" style="width: 200px">
+                            <f:selectItems value="#{informePagoAlumnoBean.listEstadoComprobanteAlumno}" var="estado" />
+                        </p:selectOneMenu>
+
+
+                    </p:panelGrid>
+
+                </div>
+                <!-- BOTONES -->
+                <b:commandButton actionListener="#{informePagoAlumnoBean.modificar}" value="Confirmar" 
+                                 update=":informePagoAlumnoListInterno:dtListaCoprobantesAlumnos,:mensajes" 
+                                 oncomplete="handleSubmit(args,'modificarEstadoDialog');"
+                                 iconAwesome="fa-thin fa-check"
+                                 look="success"
+                                 />
+
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

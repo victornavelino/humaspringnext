@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                 template="./Templates/adminTemplate.xhtml"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:h="http://java.sun.com/jsf/html"
+                 xmlns:f="http://java.sun.com/jsf/core">
+
+
+
+    <ui:define name="content">
+
+        <ui:include src="MateriasDlg.xhtml" />
+        <ui:include src="TipoCarrerasDlg.xhtml" />
+        <ui:include src="CuentasDlg.xhtml" />
+
+        <!--Inicio Dialogo Carrera ABM -->
+
+        <p:dialog id="dCarrera"
+                  widgetVar="dlgCarrera"
+                  closable="false" position="top" header="Carreras" width="50%">
+
+            <h3><h:outputText value="Alta / Modificacion Carreras"/></h3>
+            <h:inputHidden value="#{carreraBean.carrera.id}" />
+            <h:inputHidden value="#{carreraBean.iActionBtnSelect}"/>
+
+            <p:panel id="pPri">
+
+                <h:panelGrid columns="2">
+
+                    <p:outputLabel value="Nombre de la Carrera:" for="itNombre" />
+                    <p:inputText id="itDescripcion" 
+                                 value="#{carreraBean.carrera.descripcion}"
+                                 title="Nombre"
+                                 size="50"
+                                 maxlength="100"/>
+                    <p:outputLabel value="Tipo de Carreras" for="soTipoCarrera"/>
+                    <p:selectOneMenu id="soTipoCarrera" 
+                                     value="#{tipoCarreraLstBean.tipoCarrera}"
+                                     converter="ConversorTipoCarrera"
+                                     required="false">
+                        <f:selectItems value="#{tipoCarreraLstBean.lstTipoCarrera}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Puntos de Venta"/>
+                    <p:selectOneMenu id="soCuentas" 
+                                     value="#{cuentaLstBean.cuenta}"
+                                     converter="ConversorCuenta"
+                                     required="false">
+                        <f:selectItems value="#{cuentaLstBean.lstCuenta}"/>
+                    </p:selectOneMenu>
+                    <!--Fin Panel Tipo Carrera--> 
+                    <p:messages autoUpdate="true"/>
+
+                    <p:commandButton id="RegistrarCarrera"
+                                     value=" " 
+                                     actionListener="#{carreraBean.actionBtn}" 
+                                     update=":frmPri:pPri, :frmPri:dtCarreras, @this"
+                                     binding="#{carreraBean.cbAction}"
+                                     styleClass="boton"/>
+
+
+                    <p:commandButton id="btnSalir"
+                                     value="Salir"  
+                                     actionListener="#{carreraBean.limpiar()}"
+                                     oncomplete="PF('dlgCarrera').hide()"
+                                     icon="ui-icon-cancel"
+                                     update=":frmPri:dCarrera, :frmPri:dtCarreras"
+                                     styleClass="boton"/>
+
+                </h:panelGrid>
+            </p:panel>
+
+        </p:dialog>
+
+        <!--Fin  Dialogo Carreras ABM -->
+
+
+        <!--Inicio Dialogo Confirmar Borrar Materias-->  
+
+        <!--Fin Dialogo Confirmar Borrar Materias--> 
+
+
+
+        <!--TABLA NIVEL -->
+
+
+        <h1><h:outputText value="Carreras"
+                          /></h1>
+
+
+
+        <p:commandButton id="cbCreate"
+                         value="Agregar" 
+                         icon="ui-icon-circle-plus" 
+                         oncomplete="PF('dlgCarrera').show();"
+                         actionListener="#{carreraBean.setBtnSelect}"
+                         update=":frmPri:dtCarreras, dCarrera"
+                         />
+
+
+
+
+
+        <p></p>
+        <p:dataTable id="dtCarreras"
+                     widgetVar="dtCarreras"
+                     value="#{carreraLstBean.lstCarrera}" 
+                     var="item"
+                     style="overflow-x: auto;"
+                     paginator="true"
+                     filterEvent="enter"
+                     rows="20"
+                     rowsPerPageTemplate="20,50,100,500">
+
+            <p:column width="110">
+
+                <p:commandButton id="cbEdit"
+                                 title="Editar"
+                                 icon="ui-icon-pencil" 
+                                 update=":frmPri:dCarrera"
+                                 oncomplete="PF('dlgCarrera').show();"
+                                 actionListener="#{carreraBean.setBtnSelect}">
+                    <f:setPropertyActionListener value="#{item}" target="#{carreraBean.carrera}"/> 
+
+                </p:commandButton>
+                <p:commandButton id="cbDelete"
+                                 title="Eliminar"
+                                 icon="ui-icon-circle-close" 
+                                 update=":frmPri:dCarrera"
+                                 oncomplete="PF('dlgCarrera').show();"
+                                 actionListener="#{carreraBean.setBtnSelect}">
+                    <f:setPropertyActionListener value="#{item}" target="#{carreraBean.carrera}"/> 
+
+                </p:commandButton>
+            </p:column>
+            <p:column
+                filterBy="#{item.descripcion}">
+                <f:facet name="header">
+                    <h:outputText value="Nombre"/>
+                </f:facet>
+                <h:outputText value="#{item.descripcion}"/>
+            </p:column>
+            <p:column >
+                <f:facet name="header">
+                    <h:outputText value="Punto de Venta"/>
+                </f:facet>
+                <h:outputText value="#{item.cuenta.descripcion}"/>
+            </p:column>
+            <p:column >
+                <f:facet name="header">
+                    <h:outputText value="Tipo"/>
+                </f:facet>
+                <h:outputText value="#{item.tipoCarrera}"/>
+            </p:column>
+        </p:dataTable>
+    </ui:define>
+</ui:composition>

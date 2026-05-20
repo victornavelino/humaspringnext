@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="828" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" uuid="a7c1509d-f949-4eb2-be48-fb3c1c51872f">
+	<property name="ireport.zoom" value="1.3310000000000055"/>
+	<property name="ireport.x" value="57"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fechaIni" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="fechaFin" class="java.util.Date"/>
+	<parameter name="cuenta_id" class="java.lang.Integer"/>
+	<parameter name="cuenta" class="java.lang.String"/>
+	<parameter name="feha_fin_real" class="java.util.Date"/>
+	<parameter name="escudo1" class="java.lang.String"/>
+	<parameter name="formaPago" class="java.lang.String"/>
+	<parameter name="nombreTarjeta" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+    char_length(trim(to_char(numero_recibo,'999999999'))) as cant,trim(to_char(numero_recibo,'999999999')) as num_rec,
+     ingresos."numero_recibo",
+     ingresos."cuota",
+     ingresos."fechapago",
+     COALESCE(ingresos."nombre",'') AS alumno_eventual,
+     COALESCE(alumno."apellido"||' '||alumno."nombre",'') AS alumno,
+     ingresos."cuenta_id",
+     ingresos."tipoingreso_id",
+     ingresos."importe",
+     ingresos."alumno_id",
+     ingresos."anulado",
+     ingresos."formapago" ,
+     tarjetadecredito."descripcion" AS tarjeta,
+     ingresos.cohorte_id,
+     COALESCE (ingresos."concepto",'') as concepto_eventual,
+      COALESCE (ingresos_tipo_ingreso.descripcion,'') as tipoingreso,
+COALESCE(cohorte.descripcion,'') as cohorte,
+COALESCE(carrera.descripcion,'') as carerra,
+
+
+ingresos.formapago,
+ingresos.importe
+FROM
+     ingresos left JOIN  alumno ON ingresos."alumno_id" = alumno."id"
+     left JOIN ingresos_tipo_ingreso ON ingresos."tipoingreso_id" = ingresos_tipo_ingreso."id"
+     left join cohorte on ingresos.cohorte_id= cohorte.id
+     left join carrera on cohorte.carrera_id=carrera.id
+     left join tarjetadecredito on ingresos.tarjetadecredito_id=tarjetadecredito.id
+WHERE
+     ingresos.fechapago BETWEEN $P{fechaIni} and $P{fechaFin}
+     and ingresos.borrado = false
+     and ingresos.cuenta_id = $P{cuenta_id}
+and ingresos.anulado=false
+and ingresos.importe<>0
+ union
+SELECT
+    char_length(trim(to_char(numero_recibo,'999999999'))) as cant,trim(to_char(numero_recibo,'999999999')) as num_rec,
+     ingresos."numero_recibo",
+     ingresos."cuota",
+     ingresos."fechapago",
+     COALESCE(ingresos."nombre",'') AS alumno_eventual,
+     COALESCE(alumno."apellido"||' '||alumno."nombre",'') AS alumno,
+     ingresos."cuenta_id",
+     ingresos."tipoingreso_id",
+     0 as "importe",
+     ingresos."alumno_id",
+     ingresos."anulado",
+     ingresos."formapago" ,
+     tarjetadecredito."descripcion" as tarjeta,
+     ingresos.cohorte_id,
+     COALESCE (ingresos."concepto",'') as concepto_eventual,
+      COALESCE (ingresos_tipo_ingreso.descripcion,'') as tipoingreso,
+COALESCE(cohorte.descripcion,'') as cohorte,
+COALESCE(carrera.descripcion,'') as carerra,
+
+
+ingresos.formapago,
+0 as importe
+FROM
+     ingresos left JOIN  alumno ON ingresos."alumno_id" = alumno."id"
+     left JOIN ingresos_tipo_ingreso ON ingresos."tipoingreso_id" = ingresos_tipo_ingreso."id"
+     left join cohorte on ingresos.cohorte_id= cohorte.id
+     left join carrera on cohorte.carrera_id=carrera.id
+     left join tarjetadecredito on ingresos.tarjetadecredito_id=tarjetadecredito.id
+WHERE
+     ingresos.fechapago BETWEEN $P{fechaIni} and $P{fechaFin}
+     and ingresos.borrado = false
+     and ingresos.cuenta_id = $P{cuenta_id}
+and ingresos.anulado=true
+order by numero_recibo asc]]>
+	</queryString>
+	<field name="cant" class="java.lang.Integer"/>
+	<field name="num_rec" class="java.lang.String"/>
+	<field name="numero_recibo" class="java.lang.Integer"/>
+	<field name="cuota" class="java.lang.Integer"/>
+	<field name="fechapago" class="java.sql.Date"/>
+	<field name="alumno_eventual" class="java.lang.String"/>
+	<field name="alumno" class="java.lang.String"/>
+	<field name="cuenta_id" class="java.lang.Long"/>
+	<field name="tipoingreso_id" class="java.lang.Long"/>
+	<field name="importe" class="java.math.BigDecimal"/>
+	<field name="alumno_id" class="java.lang.Long"/>
+	<field name="anulado" class="java.lang.Boolean"/>
+	<field name="formapago" class="java.lang.String"/>
+	<field name="tarjeta" class="java.lang.String"/>
+	<field name="cohorte_id" class="java.lang.Long"/>
+	<field name="concepto_eventual" class="java.lang.String"/>
+	<field name="tipoingreso" class="java.lang.String"/>
+	<field name="cohorte" class="java.lang.String"/>
+	<field name="carerra" class="java.lang.String"/>
+	<sortField name="numero_recibo"/>
+	<variable name="Total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<variable name="importe_1" class="java.math.BigDecimal" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<variable name="importe_2" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<variable name="importe_3" class="java.math.BigDecimal" resetType="Column" incrementType="Report" calculation="Average">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<variable name="importe_4" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<filterExpression><![CDATA[($P{formaPago}!=null?new Boolean($F{formapago}.equals($P{formaPago})):Boolean.TRUE)]]></filterExpression>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="77" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="244" height="36" uuid="e5b4964a-952b-4c1c-981f-71930a7bf288"/>
+				<imageExpression><![CDATA[$P{escudo1}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="283" y="16" width="240" height="20" uuid="584c0786-5dfa-4d16-8a90-a766562d856e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Facultad de Humanidades-UNCa.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="472" y="37" width="61" height="20" uuid="1a06d5e7-e100-4bc9-bcd4-641ad2eb5909"/>
+				<textElement>
+					<font size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cuenta}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="289" y="36" width="182" height="20" uuid="72ff6172-b441-4ccd-b77c-15252d8b738b"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RECURSOS PROPIOS - PUNTO]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yy">
+				<reportElement x="566" y="37" width="57" height="20" uuid="cdbb0fd5-7aed-4309-86cf-59f71dc8bbdb"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaIni}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="626" y="37" width="11" height="20" uuid="6ea06c77-bef8-436a-ad55-e27c53ba3665"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[a]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yy">
+				<reportElement x="639" y="37" width="67" height="20" uuid="90d1b2f3-ff36-4c7e-b7b1-6d7e5855ed16"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{feha_fin_real}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="701" y="57" width="80" height="20" uuid="e473a756-1d10-4039-81a1-2194d84a50e9"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="781" y="57" width="40" height="20" uuid="adde244a-1f8b-4828-9643-8c6d0b8b70fb"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="549" y="37" width="15" height="20" uuid="9993ca57-0d10-478f-9f02-202749850ca3"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="283" y="56" width="250" height="20" uuid="4b7ed3f5-37ff-4684-8c15-8a35cbcf3412"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INGRESOS POR VENTAS -ANEXO I - Inciso b) pto 2]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="718" y="1" width="60" height="20" uuid="38aa1428-5787-4f10-8050-78c44161136b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Forma Pago]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="1" width="135" height="20" uuid="d31506a3-0eb3-45d0-9408-32d0fc76fa91"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Titular]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="1" width="294" height="20" uuid="2c7e85a7-ec4e-4062-bed9-c9fbe7d72834"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Concepto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="1" width="65" height="20" uuid="e11de084-6ca3-4b1f-8e2b-7eff9957d199"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° Recibo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="65" y="1" width="55" height="20" uuid="f838f3b2-2909-4d47-906b-46774ffd6618"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Pago]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="666" y="1" width="52" height="20" uuid="d15f71d3-1def-44f5-a7f6-a7ab1f51bcae"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Importe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="549" y="1" width="117" height="20" uuid="5150dba6-fd94-47ce-993b-2cbaeb574bfd"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rubro Principal Presupuestario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="778" y="1" width="50" height="20" uuid="79a92461-8810-4197-be8e-5ad406439a0c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tarjeta]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="120" y="0" width="135" height="23" uuid="29d22ebb-6ca3-4cd7-963d-ca6087205748"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{anulado}== true?"ANULADO":$F{alumno_eventual} + $F{alumno})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="255" y="0" width="294" height="23" uuid="6706c5dc-e3cf-41ef-a86d-87078a39d2ea"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{anulado}== true?"":$F{concepto_eventual}+"  "+$F{tipoingreso}+"  "+$F{cohorte}+"  " + $F{carerra})+
+($F{cuota}>0?", cuota: "+$F{cuota}:""))]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="65" height="23" uuid="64cf9308-d05b-4e47-90a6-af82708e52d4"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cant}==1?$P{cuenta}+"-"+"0000000"+$F{num_rec}:$F{cant}==2?$P{cuenta}+"-"+"000000"+$F{num_rec}:$F{cant}==3?$P{cuenta}+"-"+"00000"+$F{num_rec}:$F{cant}==4?$P{cuenta}+"-"+"0000"+$F{num_rec}:$F{cant}==5?$P{cuenta}+"-"+"000"+$F{num_rec}:$F{cant}==6?$P{cuenta}+"-"+"00"+$F{num_rec}:$F{cant}==7?$P{cuenta}+"-"+"0"+$F{num_rec}:$F{cant}==8?$P{cuenta}+"-"+$F{num_rec}:$F{num_rec}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy">
+				<reportElement stretchType="RelativeToTallestObject" x="65" y="0" width="55" height="23" uuid="ded13cbc-abf3-49bc-8f69-f14c9017c967"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechapago}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="666" y="0" width="52" height="23" uuid="b0aec1ec-80e0-4a70-90fc-2f79067ea70a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["$ "+($F{importe} == null? 0.0 :$F{importe})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="718" y="0" width="60" height="23" uuid="4449c0df-c234-4767-8cba-1ee3faa3462e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{formapago}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="549" y="0" width="117" height="23" uuid="afc4f87c-01c6-46b8-9e2b-c5487f5ccc17"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[FUENTE 12- R PROPIOS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="778" y="0" width="50" height="23" uuid="faf4a66c-ed39-430a-93d1-43f66a7f6a78"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tarjeta}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="22" splitType="Prevent">
+			<textField>
+				<reportElement x="706" y="2" width="77" height="20" uuid="20b90059-a2d0-4d6f-92f5-907ce7413068"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["$ "+$V{importe_2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="436" y="2" width="57" height="20" uuid="7abb0425-4267-4e6e-a77d-32029be17603"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SUBTOTAL]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="24">
+			<textField>
+				<reportElement x="706" y="2" width="77" height="20" uuid="6d1da159-35ea-4efc-a35e-cea890c2c1e2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["$ "+$V{importe_4}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="436" y="2" width="57" height="20" uuid="51a411fd-22ae-4e65-9f19-92ea7e684212"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

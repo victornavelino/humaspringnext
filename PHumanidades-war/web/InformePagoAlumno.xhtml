@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                 template="./Templates/paginasTemplate.xhtml"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:h="http://java.sun.com/jsf/html"
+                 xmlns:f="http://java.sun.com/jsf/core"
+                 xmlns:b="http://bootsfaces.net/ui"
+                 >
+
+    <ui:define name="content">
+        <p:growl id="mensajes" life="3000"/>
+        <ui:include src="AlumnoFindDlgInformePago2.xhtml"/>
+        <h3>
+            <h:outputText value="Comprobantes de Pago - Alumnos"></h:outputText>
+        </h3> 
+        <!-- TABLA AQUI -->
+        <table>
+            <tr>
+                <td>
+                    <p:panel id="pnAlumnoPago" 
+                             header="Seleccionar Alumno"
+                             >
+                        <h:panelGrid columns="3" style="width: 100%">
+                            <h:outputText value="*Alumno: "/>
+                            <p:commandButton id="cbBuscarAlumnoCobro" 
+                                             icon="ui-icon-search"
+                                             actionListener="#{informePagoAlumnoBean.abrirDlgFindAlumnoConsulta()}"
+                                             update="dlgBuscarAlumno"
+                                             process="@this"
+                                             />
+
+                            <h:outputText id="otAlumnoPago"
+                                          value="#{informePagoAlumnoBean.alumno.dni} - #{informePagoAlumnoBean.alumno.apellido} - #{informePagoAlumnoBean.alumno.nombre}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+                    <p:panel id="pnCohortesPagoAlumno" 
+                             >
+                        <p:dataTable  id="dtCohortesAlumno"
+                                      value="#{informePagoAlumnoBean.lstCohorteAlumnoPago}"
+                                      var="cort"  
+                                      rowKey="#{cort.id}">
+                            <p:column width="10%">
+                                <p:commandButton id="btnBuscarRegistros"
+                                                 actionListener="#{informePagoAlumnoBean.getComprobantesAlumno(informePagoAlumnoBean.alumno,cort)}"
+                                                 icon="ui-icon-search"
+                                                 update=":informePagoAlumnoListInterno:dtListaCoprobantesAlumnos"
+                                                 />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Carrera"/>
+                                </f:facet>
+                                <h:outputText value="#{cort.carrera.descripcion}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Cohorte"/>
+                                </f:facet>
+                                <h:outputText value="#{cort.descripcion}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                    </p:panel>
+                </td>
+            </tr>
+        </table>
+
+        <h:form id="informePagoAlumnoListInterno">
+            <p:dataTable id="dtListaCoprobantesAlumnos" value="#{informePagoAlumnoBean.items}" var="item" widgetVar="dtListaCoprobantesAlumnos"
+                         selectionMode="single" selection="#{informePagoAlumnoBean.selected}"
+                         paginator="true"
+                         rowKey="#{item.id}"
+                         rows="10"
+                         rowsPerPageTemplate="10,20,30,40,50"
+                         filterEvent="enter"
+                         >
+                <!--ajax aqui abajo-->
+                <p:ajax event="rowSelect"   update="modificarEstado deleteButton"/>
+                <p:ajax event="rowUnselect" update="modificarEstado deleteButton"/>
+
+
+                <p:column style="text-align: center;  width: 60">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_id}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.id}"/>
+                </p:column>
+
+                <p:column style="text-align: center;  width: 60">
+                    <f:facet name="header">
+                        <h:outputText value="Eliminar"/>
+                    </f:facet>
+                    <h:outputText value="#{item.id}"/>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_alumno}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.alumno}"/>
+                </p:column>
+
+                <p:column style="text-align: center"
+                          filterBy="#{item.alumno.dni}">
+                    <f:facet name="header">
+                        <h:outputText value="Documento"/>
+                    </f:facet>
+                    <h:outputText value="#{item.alumno.dni}"/>
+                </p:column>
+
+                <p:column style="text-align: center"
+                          filterBy="#{item.cohorte.descripcion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_cohorte}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.cohorte}"/>
+                </p:column>
+
+                <p:column style="text-align: center">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_nroCuota}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.nroCuota}"/>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_descripcion}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.descripcion}"/>
+                </p:column>
+
+                <p:column style="text-align: center" filterBy="#{item.fecha}" filterFunction="#{dateRangeFilter.filterByDate}">
+                    <f:facet name="filter">
+                        <h:inputHidden id="filter" />
+                    </f:facet>
+                    <f:facet name="header">
+                        <h:outputText value="Fecha" />                  
+                    </f:facet>
+                    <f:facet name="header">
+                        <p:calendar id="from" pattern="dd/MM/yyyy">
+                            <p:ajax event="dateSelect" 
+                                    onstart="$(PrimeFaces.escapeClientId('#{p:component('filter')}'))[0].value = $(PrimeFaces.escapeClientId('#{p:component('from')}_input'))[0].value + '-' + $(PrimeFaces.escapeClientId('#{p:component('to')}_input'))[0].value" 
+                                    oncomplete="PF('dtListaCoprobantesAlumnos').filter()" />
+                        </p:calendar>
+                        <p:calendar id="to" pattern="dd/MM/yyyy">
+                            <p:ajax event="dateSelect" 
+                                    onstart="$(PrimeFaces.escapeClientId('#{p:component('filter')}'))[0].value = $(PrimeFaces.escapeClientId('#{p:component('from')}_input'))[0].value + '-' + $(PrimeFaces.escapeClientId('#{p:component('to')}_input'))[0].value" 
+                                    oncomplete="PF('dtListaCoprobantesAlumnos').filter()" />
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputText value="#{item.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{bundleInformePagoAlumno.ListInformePagoAlumnoTitle_comprobantePago}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.nombreComprobantePago}"/>
+                </p:column>
+
+                <p:column style="text-align: center" headerText="Estado" 
+                          filterMatchMode="contains" sortBy="#{item.estadoComprobanteAlumno}"
+                          filterBy="#{item.estadoComprobanteAlumno}">
+
+                    <h:outputText value="#{item.estadoComprobanteAlumno.name}"/>
+                </p:column>
+                <p:column style="text-align: center">
+                    <f:facet name="header">
+                        <h:outputText value="Mensaje del Alumno"/>
+                    </f:facet>
+                    <h:outputText value="#{item.mensajeAlumno}"/>
+                </p:column>
+
+                <p:column style="text-align: center">
+                    <f:facet name="header">
+                        <h:outputText value="Visualizar"/>
+                    </f:facet>
+                    <b:commandButton id="btnVerPdf"
+                                     iconAwesome="fa-thin fa-expand" value=""
+                                     look="success"
+                                     action="#{informePagoAlumnoBean.verPdf(item)}"
+                                     update="dialogJPG, dialogPDF"
+                                     ajax="false"
+                                     ></b:commandButton>
+                </p:column>
+
+                <p:column style="text-align: center; width: 150">
+                    <f:facet name="header">
+                        <h:outputText value="Descargar"/>
+                    </f:facet>
+                    <b:commandButton id="btnDescargarComprobante"
+                                     iconAwesome="fa-thin fa-download" value=""
+                                     look="success"
+                                     action="#{informePagoAlumnoBean.FileDownloadView(item)}"
+                                     >
+                        <p:fileDownload value="#{informePagoAlumnoBean.file}"/>
+                    </b:commandButton>
+                </p:column>
+                <f:facet name="footer">
+                    <p:commandButton id="modificarEstado"
+                                     icon="ui-icon-pencil" value="Controlar" 
+                                     update=":ModificarEstadoDialogForm" oncomplete="PF('modificarEstadoDialog').show()" disabled="#{empty informePagoAlumnoBean.selected}"/>
+                    <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Eliminar" actionListener="#{informePagoAlumnoBean.eliminar}" 
+                                     update=":mensajes,dtListaCoprobantesAlumnos" disabled="#{empty informePagoAlumnoBean.selected}"
+                                     />
+                </f:facet>
+            </p:dataTable>
+
+
+            <p:dialog id="dialogPDF" widgetVar="pdfDialog" modal="true" resizable="false">
+                <p:media  id="vistaPDF" value="#{informePagoAlumnoBean.vistaPrevia}" width="750" height="500" player="pdf" cache="false">
+                </p:media>
+            </p:dialog>
+
+            <p:dialog id="dialogJPG" widgetVar="jpgDialog" modal="true" resizable="false">
+                <div style="width: 750px; height: 500px; overflow: auto;">
+                    <p:graphicImage id="vistaIMG" value="#{informePagoAlumnoBean.vistaPrevia}" cache="false" />
+                </div>
+            </p:dialog>
+        </h:form>
+        <ui:include src="EditEstadoComprobanteAlumnoDialog.xhtml"/>
+    </ui:define>
+</ui:composition>
