@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PhumanidadesApplication<phumanidades>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.humanidades.phumanidades.PhumanidadesApplication",
+            "projectName": "phumanidades",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
