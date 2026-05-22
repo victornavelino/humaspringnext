@@ -7,6 +7,9 @@ package com.humanidades.model.Carreras;
 
 import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,10 +26,10 @@ import jakarta.persistence.OneToOne;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Carrera.findCarreraNombre",
-            query = "SELECT c FROM Carrera c WHERE LOWER(c.descripcion) LIKE :nombre ORDER BY c.descripcion"),})
+        @NamedQuery(name = "Carrera.findCarreraNombre", query = "SELECT c FROM Carrera c WHERE LOWER(c.descripcion) LIKE :nombre ORDER BY c.descripcion"), })
 public class Carrera implements Serializable {
 
+    @JsonIgnore
     @OneToMany(mappedBy = "carrera")
     private List<Cohorte> cohortes;
     private static final long serialVersionUID = 1L;
@@ -34,7 +37,7 @@ public class Carrera implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String descripcion;
-
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     private List<Materia> materias;
 
