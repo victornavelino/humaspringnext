@@ -23,6 +23,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -57,12 +58,15 @@ public class Alumno implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     private Domicilio domicilio;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     private List<Telefono> telefonos;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     private List<CorreoElectronico> correosElectronicos;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "alumno")
     private List<InscripcionAlumnos> inscripcionesAlumnos;
 
